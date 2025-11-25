@@ -1,1 +1,1 @@
-# Memify-demo
+# FaiRY-sample
