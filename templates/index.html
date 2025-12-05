@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="/static/favicon.ico">
+    <title>FaiRY 감정 분석</title>
+    <style>
+        .tab-btn { padding:10px; cursor:pointer; display:inline-block; }
+        .active { font-weight:bold; border-bottom:2px solid black; }
+        .hidden { display:none; }
+    </style>
+    <script>
+        function showTab(tab){
+            document.getElementById("text-tab").classList.add("hidden");
+            document.getElementById("image-tab").classList.add("hidden");
+            document.getElementById(tab).classList.remove("hidden");
+
+            document.getElementById("text-btn").classList.remove("active");
+            document.getElementById("image-btn").classList.remove("active");
+            document.getElementById(tab+"-btn").classList.add("active");
+        }
+    </script>
+</head>
+<body onload="showTab('text-tab')">
+    
+
+
+    <div>
+        <span id="text-tab-btn" class="tab-btn active" onclick="showTab('text-tab')">텍스트 감정 분석</span>
+        <span id="image-tab-btn" class="tab-btn" onclick="showTab('image-tab')">이미지 감정 분석</span>
+    </div>
+    <hr>
+
+    <!-- 텍스트 감정 분석 -->
+    <div id="text-tab">
+        <form method="POST">
+            <input type="text" name="user_input" placeholder="기분을 입력하세요">
+            <button type="submit">분석하기</button>
+        </form>
+
+        {% if result %}
+          <h3>감정: {{ result }}</h3>
+          <p>추천 노래: {{ song }}</p>
+          <p>추천 할 일: {{ todo }}</p>
+        {% endif %}
+    </div>
+
+    <!-- 이미지 감정 분석 -->
+    <div id="image-tab" class="hidden">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*">
+            <button type="submit">분석하기</button>
+        </form>
+
+        {% if img_result %}
+          <h3>감정 분석 결과: {{ img_result }}</h3>
+        {% endif %}
+    </div>
+
+</body>
+</html>
