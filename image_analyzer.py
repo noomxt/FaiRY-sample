@@ -1,7 +1,7 @@
 from transformers import ViTForImageClassification, ViTImageProcessor
 from PIL import Image
 import torch
-import recommend  # 미현이 데이터 모듈 연동
+from config import EMOTION_FILES  # 미현이 데이터 모듈 연동
 
 
 class ImageEmotionAnalyzer:
@@ -11,7 +11,7 @@ class ImageEmotionAnalyzer:
         self.model = ViTForImageClassification.from_pretrained("trpakov/vit-face-expression")
         self.processor = ViTImageProcessor.from_pretrained("trpakov/vit-face-expression")
 
-        self.emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
+        self.emotions = ["분노", "공포", "기쁨", "평온", "슬픔"]
         # 우리 프로젝트(미현 데이터)에 맞는 한글 키워드로 매핑
         self.emotion_map = {
             'Angry': '분노',
@@ -43,12 +43,11 @@ class ImageEmotionAnalyzer:
             emotion_kor = self.emotion_map.get(emotion_eng, '평온')
 
             # 4. 미현이 모듈에서 추천 데이터 가져오기
-            reco_data = recommend.get_recommendation(emotion_kor)
+            rec = self.recommender.get_recommendation(emotion_kor)
 
             return {
-                "emotion_eng": emotion_eng,
                 "emotion": emotion_kor,
-                "recommendation": reco_data
+                "recommendation": rec
             }
 
         except Exception as e:

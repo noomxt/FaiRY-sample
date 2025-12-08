@@ -1,60 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <link rel="icon" href="/static/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FaiRY 감정 분석</title>
-    <style>
-        .tab-btn { padding:10px; cursor:pointer; display:inline-block; }
-        .active { font-weight:bold; border-bottom:2px solid black; }
-        .hidden { display:none; }
-    </style>
-    <script>
-        function showTab(tab){
-            document.getElementById("text-tab").classList.add("hidden");
-            document.getElementById("image-tab").classList.add("hidden");
-            document.getElementById(tab).classList.remove("hidden");
 
-            document.getElementById("text-btn").classList.remove("active");
-            document.getElementById("image-btn").classList.remove("active");
-            document.getElementById(tab+"-btn").classList.add("active");
-        }
-    </script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <!-- CSS 연결 -->
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-<body onload="showTab('text-tab')">
-    
 
-
-    <div>
-        <span id="text-tab-btn" class="tab-btn active" onclick="showTab('text-tab')">텍스트 감정 분석</span>
-        <span id="image-tab-btn" class="tab-btn" onclick="showTab('image-tab')">이미지 감정 분석</span>
-    </div>
-    <hr>
-
-    <!-- 텍스트 감정 분석 -->
-    <div id="text-tab">
-        <form method="POST">
-            <input type="text" name="user_input" placeholder="기분을 입력하세요">
-            <button type="submit">분석하기</button>
-        </form>
-
-        {% if result %}
-          <h3>감정: {{ result }}</h3>
-          <p>추천 노래: {{ song }}</p>
-          <p>추천 할 일: {{ todo }}</p>
-        {% endif %}
-    </div>
+<body>
+    <h1 class="title">FaiRY</h1>
+    <p class="subtitle">이미지와 텍스트로 오늘의 감정을 분석해보세요</p>
 
     <!-- 이미지 감정 분석 -->
-    <div id="image-tab" class="hidden">
-        <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="image" accept="image/*">
-            <button type="submit">분석하기</button>
-        </form>
+    <div class="section">
+        <h2>이미지 감정 분석</h2>
+        <p>사진을 업로드하고 감정을 분석해보세요.</p>
 
-        {% if img_result %}
-          <h3>감정 분석 결과: {{ img_result }}</h3>
-        {% endif %}
+        <form action="/analyze_image" method="POST" enctype="multipart/form-data">
+            <div class="upload-area">
+                이미지를 선택하거나 여기로 끌어다 놓으세요
+                <input type="file" name="file">
+            </div>
+            <button class="analyze-btn" type="submit">이미지 분석</button>
+        </form>
+    </div>
+
+    <!-- 텍스트 감정 분석 -->
+    <div class="section">
+        <h2>텍스트 감정 분석</h2>
+        <p>오늘의 기분을 한 줄로 입력해보세요.</p>
+
+        <form action="/analyze_text" method="POST">
+            <textarea name="text" placeholder="예) 행복해요."></textarea>
+            <button class="analyze-btn" type="submit">텍스트 분석</button>
+        </form>
     </div>
 
 </body>
 </html>
+

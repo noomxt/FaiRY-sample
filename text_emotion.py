@@ -9,7 +9,6 @@ class TextEmotionAnalyzer:
     def __init__(self):
         self.emotion_keywords = {} 
         self.recommendations = {}
-        
         self._load_all_data()
 
     def _load_all_data(self):
@@ -27,13 +26,17 @@ class TextEmotionAnalyzer:
 
         for emotion, file_path in EMOTION_FILES.items():
             loaded_keywords = []
+
             
             if os.path.exists(file_path):
                 try:
                     with open(file_path, 'r', encoding='utf-8-sig') as f:
                         reader = csv.reader(f)
-                        for row in reader:
-                            if not row: continue
+                        for i, row in enumerate(reader):
+                            if not row:
+                                continue
+                            if i == 0 and "category" in row[1].lower():
+                                continue
                             
                             if len(row) >= 3:
                                 category = row[1].strip() 
@@ -96,17 +99,43 @@ class TextEmotionAnalyzer:
         if "공포" in top_emotions: return "공포"
         
         return top_emotions[0]
-
+    
+    
     def get_recommendation(self, sentiment):
-        rec_data = self.recommendations.get(sentiment, self.recommendations.get("평온"))
-        
-        song = "추천 노래 없음"
-        act = "휴식하기"
-
-        if rec_data:
-            if rec_data["song"]:
-                song = random.choice(rec_data["song"])
-            if rec_data["act"]:
-                act = random.choice(rec_data["act"])
+        rec_data = self.recommendations.get(sentiment, {})
+        songs = rec_data.get("song", [])
+        acts = rec_data.get("act", [])
+        song = random.choice(songs) if songs else "추천 노래 없음"
+        act = random.choice(acts) if acts else "추천 활동 없음"
         
         return {"song": song, "todo": act}
+
+    
+    import pandas as pd
+
+class TextEmotion:
+    def __init__(self):
+        self.recommendations = {}
+        self.load_recommendations()
+
+    def load_recommendations(self):
+        folder_path = "data"
+        for file in os.listdir(folder_path):
+            if file.endswith(".csv"):
+                emotion = file.replace("data_", "").replace(".csv", "")
+                df = pd.read_csv(os.path.join(folder_path, file), encoding='utf-8')
+
+                self.recommendations[emotion] = {
+                    "comment": [],
+                    "song": [],
+                    "act": []
+                }
+
+                for _, row in df.iterrows():
+                    category = row['category']
+                    content = row['content']
+                    self.recommendations[emotion][category].append(content)
+
+
+    
+

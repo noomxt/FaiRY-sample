@@ -1,0 +1,82 @@
+/* 전체 레이아웃 */
+body {
+    font-family: "Pretendard", sans-serif;
+    background: linear-gradient(to bottom, #ffe6f2, #ffd6eb);
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+/* 제목 */
+.title {
+    font-size: 40px;
+    color: #ff85c2;
+    margin-top: 10px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 25px;
+}
+
+/* 감정 분석 영역 */
+.section {
+    background: white;
+    width: 65%;    /* 줄임 */
+    margin: 20px auto;
+    padding: 25px; /* 줄임 */
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(255, 102, 153, 0.25);
+}
+
+.section h2 {
+    color: #ff85c2;
+    font-size: 22px;  /* 줄임 */
+    margin-bottom: 8px;
+}
+
+.section p {
+    font-size: 14px;  /* 줄임 */
+    color: #555;
+}
+
+/* 업로드 박스 */
+.upload-area {
+    margin: 15px auto;
+    padding: 20px;   /* 줄임 */
+    border: 2px dashed #ff85c2;
+    border-radius: 10px;
+    width: 80%;
+    color: #333;
+    font-size: 14px;
+}
+
+/* 텍스트 입력 */
+textarea {
+    width: 80%;
+    height: 70px;  /* 크게 줄임 */
+    border: 2px dashed #ff85c2;
+    border-radius: 10px;
+    font-size: 14px; /* 줄임 */
+    padding: 12px;
+    margin-top: 10px;
+    resize: none;
+}
+
+/* 버튼 */
+.analyze-btn {
+    margin-top: 18px;
+    width: 70%;     /* 줄임 */
+    height: 48px;   /* 줄임 */
+    background: #ff85c2;
+    border: none;
+    color: white;
+    font-size: 17px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.analyze-btn:hover {
+    background: #ff85c2;
+}
