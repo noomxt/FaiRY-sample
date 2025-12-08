@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from analyzer import TextEmotionAnalyzer
+from text_emotion import TextEmotionAnalyzer
 from image_analyzer import ImageEmotionAnalyzer
 import os
 app = Flask(__name__, static_folder='static', template_folder='templates')
