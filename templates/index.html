@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaiRY 감정 분석</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <!-- CSS 연결 -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <h1 class="title">FaiRY</h1>
+    <p class="subtitle">이미지와 텍스트로 오늘의 감정을 분석해보세요</p>
+
+    <!-- 이미지 감정 분석 -->
+    <div class="section">
+        <h2>이미지 감정 분석</h2>
+        <p>사진을 업로드하고 감정을 분석해보세요.</p>
+
+        <form action="/analyze_image" method="POST" enctype="multipart/form-data">
+            <div class="upload-area">
+                이미지를 선택하거나 여기로 끌어다 놓으세요
+                <input type="file" name="file">
+            </div>
+            <button class="analyze-btn" type="submit">이미지 분석</button>
+        </form>
+    </div>
+
+    <!-- 텍스트 감정 분석 -->
+    <div class="section">
+        <h2>텍스트 감정 분석</h2>
+        <p>오늘의 기분을 한 줄로 입력해보세요.</p>
+
+        <form action="/analyze_text" method="POST">
+            <textarea name="text" placeholder="예) 행복해요."></textarea>
+            <button class="analyze-btn" type="submit">텍스트 분석</button>
+        </form>
+    </div>
+
+</body>
+</html>
+
