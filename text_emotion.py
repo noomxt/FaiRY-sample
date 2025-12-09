@@ -13,9 +13,6 @@ class TextEmotionAnalyzer:
         self._load_all_data()
 
     def _load_all_data(self):
-        """CSV 파일을 로드하되, 경로가 틀렸을 경우 자동으로 찾아냅니다."""
-        
-        # 패치 데이터 (비상용)
         patch_data = {
             "분노": ["빡친다", "돌겟네", "개빡", "킹받네", "열받아", "뚜껑 열린다", "딥빡", "씨", "시발", "짜증"],
             "슬픔": ["광광", "롬곡", "힝", "시무룩", "흑흑", "ㅠ", "ㅜ", "우울", "눈물"],
@@ -24,25 +21,19 @@ class TextEmotionAnalyzer:
             "평온": ["평온", "쏘쏘", "보통", "휴식", "멍"]
         }
 
-        # 저장소 초기화
         for emotion in EMOTION_FILES.keys():
             self.emotion_keywords[emotion] = []
             self.recommendations[emotion] = {"song": [], "act": []}
 
-        # 파일 순회
         for emotion, original_path in EMOTION_FILES.items():
             final_path = original_path
             
-            # 1. config가 알려준 경로에 파일이 있는지 확인
             if not os.path.exists(original_path):
-                # 2. 없으면 '자동 경로 탐색' 시작
-                filename = os.path.basename(original_path) # 예: data_joy.csv
-                
-                # 찾아볼 후보 경로들 (현재 폴더의 data, 상위 폴더의 data 등)
+                filename = os.path.basename(original_path) 
                 candidates = [
-                    os.path.join('data', filename),              # ./data/data_joy.csv
-                    os.path.join('..', 'data', filename),        # ../data/data_joy.csv
-                    os.path.join('.', 'fairy', 'data', filename) # ./fairy/data/data_joy.csv
+                    os.path.join('data', filename),              
+                    os.path.join('..', 'data', filename),        
+                    os.path.join('.', 'fairy', 'data', filename)
                 ]
                 
                 found = False
@@ -50,15 +41,14 @@ class TextEmotionAnalyzer:
                     if os.path.exists(path):
                         final_path = path
                         found = True
-                        print(f"   🚩 경로 자동 보정 성공: {original_path} -> {final_path}")
+                        print(f"경로 자동 보정 성공: {original_path} -> {final_path}")
                         break
                 
                 if not found:
-                    print(f"   ❌ 실패: '{filename}'을 찾을 수 없습니다. (패치 데이터 사용)")
+                    print(f"실패: '{filename}'을 찾을 수 없습니다. (패치 데이터 사용)")
                     self.emotion_keywords[emotion] = patch_data.get(emotion, [])
                     continue
 
-            # 3. 파일 읽기 (인코딩 자동 감지)
             success = False
             for enc in ['utf-8-sig', 'cp949']:
                 try:
@@ -72,7 +62,7 @@ class TextEmotionAnalyzer:
                                 category = row[1].strip()
                                 content = row[2].strip()
                                 if category == "comment":
-                                    self.emotion_keywords[emotion].append(content) # 바로 추가
+                                    self.emotion_keywords[emotion].append(content)
                                 elif category == "song":
                                     self.recommendations[emotion]["song"].append(content)
                                 elif category == "act":
@@ -82,11 +72,10 @@ class TextEmotionAnalyzer:
                                 self.emotion_keywords[emotion].append(row[0].strip())
                                 count += 1
                         
-                        # 패치 데이터와 병합 (중복 제거)
                         combined = self.emotion_keywords[emotion] + patch_data.get(emotion, [])
                         self.emotion_keywords[emotion] = list(set(combined))
                         
-                        print(f"   ✅ [{emotion}] 로드 완료 ({count}개)")
+                        print(f"[{emotion}] 로드 완료 ({count}개)")
                         success = True
                         break
                 except UnicodeDecodeError:
@@ -95,8 +84,7 @@ class TextEmotionAnalyzer:
                     pass
             
             if not success:
-                print(f"   ❌ 읽기 실패: {final_path}")
-                # 읽기 실패해도 패치 데이터는 넣어줌
+                print(f"읽기 실패: {final_path}")
                 self.emotion_keywords[emotion] = patch_data.get(emotion, [])
 
     def preprocess_text(self, text):
@@ -147,16 +135,16 @@ class TextEmotionAnalyzer:
         return {"song": song, "todo": act}
 
 if __name__ == "__main__":
-    print("\n--- 🚀 테스트 실행 ---")
+    print("\n---테스트 실행 ---")
     analyzer = TextEmotionAnalyzer()
     
     test_inputs = ["진짜 빡친다", "너무 행복해", "아무 생각이 없다"]
     for text in test_inputs:
         result = analyzer.analyze(text)
         rec = analyzer.get_recommendation(result)
-        print(f"\n💬 입력: {text}")
-        print(f"   👉 감정: [{result}]")
-        print(f"   🎵 추천: {rec['song']} / {rec['todo']}")
+        print(f"\n입력: {text}")
+        print(f"감정: [{result}]")
+        print(f"추천: {rec['song']} / {rec['todo']}")
 
     
     
