@@ -75,10 +75,10 @@
 
     <div class="emotion">감정: {{ sentiment }}</div>
 
-    {% if song or act %}
+    {% if rec %}
     <div class="recommend-box">
-        <strong>🎵 추천 노래:</strong> {{ song }} <br>
-        <strong>🌿 추천 활동:</strong> {{ act }}
+        <strong> 추천 노래:</strong> {{ rec["song"] }} <br>
+        <strong> 추천 활동:</strong> {{ rec["todo"] }}
     </div>
     {% endif %}
 

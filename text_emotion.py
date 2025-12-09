@@ -7,11 +7,15 @@ from config import EMOTION_FILES
 
 class TextEmotionAnalyzer:
     def __init__(self):
-        self.emotion_keywords = {} 
+        print(f"\n[System] 현재 실행 위치: {os.getcwd()}")
+        self.emotion_keywords = {}
         self.recommendations = {}
         self._load_all_data()
 
     def _load_all_data(self):
+        """CSV 파일을 로드하되, 경로가 틀렸을 경우 자동으로 찾아냅니다."""
+        
+        # 패치 데이터 (비상용)
         patch_data = {
             "분노": ["빡친다", "돌겟네", "개빡", "킹받네", "열받아", "뚜껑 열린다", "딥빡", "씨", "시발", "짜증"],
             "슬픔": ["광광", "롬곡", "힝", "시무룩", "흑흑", "ㅠ", "ㅜ", "우울", "눈물"],
@@ -20,50 +24,89 @@ class TextEmotionAnalyzer:
             "평온": ["평온", "쏘쏘", "보통", "휴식", "멍"]
         }
 
+        # 저장소 초기화
         for emotion in EMOTION_FILES.keys():
             self.emotion_keywords[emotion] = []
             self.recommendations[emotion] = {"song": [], "act": []}
 
-        for emotion, file_path in EMOTION_FILES.items():
-            loaded_keywords = []
-
+        # 파일 순회
+        for emotion, original_path in EMOTION_FILES.items():
+            final_path = original_path
             
-            if os.path.exists(file_path):
+            # 1. config가 알려준 경로에 파일이 있는지 확인
+            if not os.path.exists(original_path):
+                # 2. 없으면 '자동 경로 탐색' 시작
+                filename = os.path.basename(original_path) # 예: data_joy.csv
+                
+                # 찾아볼 후보 경로들 (현재 폴더의 data, 상위 폴더의 data 등)
+                candidates = [
+                    os.path.join('data', filename),              # ./data/data_joy.csv
+                    os.path.join('..', 'data', filename),        # ../data/data_joy.csv
+                    os.path.join('.', 'fairy', 'data', filename) # ./fairy/data/data_joy.csv
+                ]
+                
+                found = False
+                for path in candidates:
+                    if os.path.exists(path):
+                        final_path = path
+                        found = True
+                        print(f"   🚩 경로 자동 보정 성공: {original_path} -> {final_path}")
+                        break
+                
+                if not found:
+                    print(f"   ❌ 실패: '{filename}'을 찾을 수 없습니다. (패치 데이터 사용)")
+                    self.emotion_keywords[emotion] = patch_data.get(emotion, [])
+                    continue
+
+            # 3. 파일 읽기 (인코딩 자동 감지)
+            success = False
+            for enc in ['utf-8-sig', 'cp949']:
                 try:
-                    with open(file_path, 'r', encoding='utf-8-sig') as f:
+                    with open(final_path, 'r', encoding=enc) as f:
                         reader = csv.reader(f)
-                        for i, row in enumerate(reader):
-                            if not row:
-                                continue
-                            if i == 0 and "category" in row[1].lower():
-                                continue
+                        count = 0
+                        for row in reader:
+                            if not row: continue
                             
                             if len(row) >= 3:
-                                category = row[1].strip() 
+                                category = row[1].strip()
                                 content = row[2].strip()
-                                
                                 if category == "comment":
-                                    loaded_keywords.append(content)
+                                    self.emotion_keywords[emotion].append(content) # 바로 추가
                                 elif category == "song":
                                     self.recommendations[emotion]["song"].append(content)
                                 elif category == "act":
                                     self.recommendations[emotion]["act"].append(content)
-                                    
-                except Exception as e:
-                    print(f"[System] {emotion} 파일 로딩 중 오류 발생: {e}")
-
-            final_keywords = loaded_keywords + patch_data.get(emotion, [])
-            self.emotion_keywords[emotion] = list(set(final_keywords))
+                                count += 1
+                            elif len(row) >= 1:
+                                self.emotion_keywords[emotion].append(row[0].strip())
+                                count += 1
+                        
+                        # 패치 데이터와 병합 (중복 제거)
+                        combined = self.emotion_keywords[emotion] + patch_data.get(emotion, [])
+                        self.emotion_keywords[emotion] = list(set(combined))
+                        
+                        print(f"   ✅ [{emotion}] 로드 완료 ({count}개)")
+                        success = True
+                        break
+                except UnicodeDecodeError:
+                    continue
+                except Exception:
+                    pass
+            
+            if not success:
+                print(f"   ❌ 읽기 실패: {final_path}")
+                # 읽기 실패해도 패치 데이터는 넣어줌
+                self.emotion_keywords[emotion] = patch_data.get(emotion, [])
 
     def preprocess_text(self, text):
         text = re.sub(r'(.)\1{2,}', r'\1\1', text) 
         return "".join(text.split())
 
     def _check_slang(self, text):
-        slang_list = ["시발", "씨발", "개새", "ㅈㄴ", "존나", "미친", "ㅅㅂ", "쌰갈", "씹","싸갈","사갈"]
+        slang_list = ["시발", "씨발", "개새", "ㅈㄴ", "존나", "미친", "ㅅㅂ", "쌰갈", "씹"]
         for slang in slang_list:
-            if slang in text:
-                return True
+            if slang in text: return True
         return False
 
     def _calculate_similarity(self, input_text, keyword):
@@ -71,17 +114,14 @@ class TextEmotionAnalyzer:
 
     def analyze(self, text):
         processed_text = self.preprocess_text(text)
-        
         scores = {emotion: 0 for emotion in self.emotion_keywords.keys()}
         
         if self._check_slang(processed_text):
-            if "분노" in scores:
-                scores["분노"] += 20 
+            if "분노" in scores: scores["분노"] += 20 
 
         for emotion, keywords in self.emotion_keywords.items():
             for keyword in keywords:
                 clean_keyword = "".join(keyword.split())
-                
                 if clean_keyword in processed_text:
                     scores[emotion] += 100
                 else:
@@ -90,51 +130,38 @@ class TextEmotionAnalyzer:
                         scores[emotion] += int(similarity * 50)
 
         max_score = max(scores.values())
-        if max_score == 0: 
-            return "평온"
+        if max_score == 0: return "평온"
         
         top_emotions = [k for k, v in scores.items() if v == max_score]
-        
         if "슬픔" in top_emotions: return "슬픔"
         if "공포" in top_emotions: return "공포"
-        
         return top_emotions[0]
-    
-    
+
     def get_recommendation(self, sentiment):
-        rec_data = self.recommendations.get(sentiment, {})
-        songs = rec_data.get("song", [])
-        acts = rec_data.get("act", [])
-        song = random.choice(songs) if songs else "추천 노래 없음"
-        act = random.choice(acts) if acts else "추천 활동 없음"
-        
+        rec_data = self.recommendations.get(sentiment, self.recommendations.get("평온"))
+        song = "추천 노래 없음"
+        act = "휴식하기"
+        if rec_data:
+            if rec_data.get("song"): song = random.choice(rec_data["song"])
+            if rec_data.get("act"): act = random.choice(rec_data["act"])
         return {"song": song, "todo": act}
 
+if __name__ == "__main__":
+    print("\n--- 🚀 테스트 실행 ---")
+    analyzer = TextEmotionAnalyzer()
     
-    import pandas as pd
+    test_inputs = ["진짜 빡친다", "너무 행복해", "아무 생각이 없다"]
+    for text in test_inputs:
+        result = analyzer.analyze(text)
+        rec = analyzer.get_recommendation(result)
+        print(f"\n💬 입력: {text}")
+        print(f"   👉 감정: [{result}]")
+        print(f"   🎵 추천: {rec['song']} / {rec['todo']}")
 
-class TextEmotion:
-    def __init__(self):
-        self.recommendations = {}
-        self.load_recommendations()
+    
+    
+    
 
-    def load_recommendations(self):
-        folder_path = "data"
-        for file in os.listdir(folder_path):
-            if file.endswith(".csv"):
-                emotion = file.replace("data_", "").replace(".csv", "")
-                df = pd.read_csv(os.path.join(folder_path, file), encoding='utf-8')
-
-                self.recommendations[emotion] = {
-                    "comment": [],
-                    "song": [],
-                    "act": []
-                }
-
-                for _, row in df.iterrows():
-                    category = row['category']
-                    content = row['content']
-                    self.recommendations[emotion][category].append(content)
 
 
     
