@@ -3,7 +3,7 @@ from PIL import Image
 import torch
 import tkinter as tk
 from tkinter import filedialog
-import config   # 추천과 CSV 매핑이 들어있는 파일
+import config   # 다른 팀원이 만든 파일을 불러옴
 
 # 감정 라벨 (FER2013 기준)
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
@@ -24,7 +24,7 @@ class EmotionAnalyzer:
         self.model = ViTForImageClassification.from_pretrained("trpakov/vit-face-expression")
         self.processor = ViTImageProcessor.from_pretrained("trpakov/vit-face-expression")
 
-    def predict(self, img_path):
+    def analyze(self, img_path):   # 감정 분석 함수
         image = Image.open(img_path).convert("RGB")
         inputs = self.processor(images=image, return_tensors="pt")
 
@@ -56,7 +56,7 @@ def main():
         return
 
     analyzer = EmotionAnalyzer()
-    result = analyzer.predict(file_path)
+    result = analyzer.analyze(file_path)
 
     print("\n=== 감정 분석 결과 ===")
     for i, label in enumerate(emotion_labels):

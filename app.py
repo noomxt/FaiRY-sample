@@ -50,11 +50,13 @@ def analyze_image():
 
     # ===== 이미지 감정 분석 결과 =====
     result = image_analyzer.analyze(converted_path)
+    sentiment = result["emotion_kor"]
+    rec = text_emotion.get_recommendation(sentiment)
 
     return render_template(
         "result.html",
-        sentiment=result["emotion"],
-        rec=result.get("recommendation", {}),
+        sentiment = result["emotion_kor"],
+        rec=rec,
         message=""
     )
 
