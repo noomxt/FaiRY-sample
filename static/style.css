@@ -23,28 +23,28 @@ body {
 /* 감정 분석 영역 */
 .section {
     background: white;
-    width: 65%;    /* 줄임 */
+    width: 65%;    
     margin: 20px auto;
-    padding: 25px; /* 줄임 */
+    padding: 25px;
     border-radius: 18px;
     box-shadow: 0 4px 15px rgba(255, 102, 153, 0.25);
 }
 
 .section h2 {
     color: #ff85c2;
-    font-size: 22px;  /* 줄임 */
+    font-size: 22px;  
     margin-bottom: 8px;
 }
 
 .section p {
-    font-size: 14px;  /* 줄임 */
+    font-size: 14px;  
     color: #555;
 }
 
 /* 업로드 박스 */
 .upload-area {
     margin: 15px auto;
-    padding: 20px;   /* 줄임 */
+    padding: 20px;   
     border: 2px dashed #ff85c2;
     border-radius: 10px;
     width: 80%;
@@ -55,10 +55,10 @@ body {
 /* 텍스트 입력 */
 textarea {
     width: 80%;
-    height: 70px;  /* 크게 줄임 */
+    height: 70px;  
     border: 2px dashed #ff85c2;
     border-radius: 10px;
-    font-size: 14px; /* 줄임 */
+    font-size: 14px; 
     padding: 12px;
     margin-top: 10px;
     resize: none;
@@ -67,8 +67,8 @@ textarea {
 /* 버튼 */
 .analyze-btn {
     margin-top: 18px;
-    width: 70%;     /* 줄임 */
-    height: 48px;   /* 줄임 */
+    width: 70%;     
+    height: 48px;   
     background: #ff85c2;
     border: none;
     color: white;
