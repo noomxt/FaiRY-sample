@@ -1,0 +1,8 @@
+flask
+werkzeug
+pillow
+torch
+transformers
+opencv-python
+pandas
+git+https://github.com/noomxt/FaiRY.git

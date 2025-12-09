@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>감정 분석 결과 | FaiRY</title>
+
+<style>
+    body {
+        text-align: center;
+        font-family: "Pretendard", sans-serif;
+        margin: 0;
+        padding: 50px;
+        background-color: #ffeef5; /* 기본 파스텔 핑크 */
+        transition: background-color 0.5s ease;
+    }
+
+    .result-card {
+        background: white;
+        width: 450px;
+        margin: 0 auto;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+        animation: fadeIn 0.8s;
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(20px);}
+        to   {opacity: 1; transform: translateY(0);}
+    }
+
+    .emotion {
+        font-size: 32px;
+        font-weight: bold;
+        margin: 15px 0;
+    }
+
+    .preview-img {
+        width: 250px;
+        border-radius: 12px;
+        margin: 15px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .recommend-box {
+        background: #fff0f7;
+        padding: 18px;
+        margin-top: 20px;
+        border-radius: 14px;
+        line-height: 1.7;
+        text-align: left;
+        font-size: 18px;
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-top: 25px;
+        padding: 10px 25px;
+        background: #ff94c2;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body id="bg">
+
+<div class="result-card">
+
+    {% if image_path %}
+    <img src="{{ image_path }}" class="preview-img">
+    {% endif %}
+
+    <div class="emotion">감정: {{ sentiment }}</div>
+
+    {% if rec %}
+    <div class="recommend-box">
+        <strong> 추천 노래:</strong> {{ rec["song"] }} <br>
+        <strong> 추천 활동:</strong> {{ rec["todo"] }}
+    </div>
+    {% endif %}
+
+    {% if message %}
+    <p style="color: red; font-weight:bold;">{{ message }}</p>
+    {% endif %}
+
+    <a href="/" class="back-btn">← 다시 분석하기</a>
+</div>
+
+<script>
+    const emotion = "{{ sentiment }}";
+
+    const colors = {
+        "기쁨": "#FFEBB8",
+        "슬픔": "#C8D9FF",
+        "분노": "#FFB7B7",
+        "무서움": "#B6C8FF",
+        "평온": "#CFFFE6",
+        "에러": "#FFE4E4"
+    };
+
+    document.getElementById("bg").style.backgroundColor = colors[emotion] || "#FFEAF3";
+</script>
+
+</body>
+</html>
+
+
