@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request
-from image_analyzer import EmotionAnalyzer
-from text_emotion import TextEmotionAnalyzer
 import os
 from werkzeug.utils import secure_filename
+from fairy.image_emotion import EmotionAnalyzer
+from fairy.text_emotion import TextEmotionAnalyzer
 
 app = Flask(__name__)
 
